@@ -1,6 +1,6 @@
-#invite link: https://discord.com/api/oauth2/authorize?client_id=1130918915720101999&permissions=26933437398081&scope=bot
+#invite link: 
 
-# bot token: MTEzMDkxODkxNTcyMDEwMTk5OQ.G3Rsw0.PqHGs3BjZiiPKYD_1cqZlLUlrNQQEKIXHrp1cs
+# bot token: 
 
 import discord
 import os
