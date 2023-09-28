@@ -12,39 +12,6 @@ from email.message import EmailMessage
 listener= sr.Recognizer()
 engine = pyttsx3.init()
 
-def email_alert(subject, body):
-    msg = EmailMessage()
-    msg.set_content(body)
-    msg["subject"] = subject
-    msg["to"] = "braedoncollett@gmail.com"
-    
-
-    user = "jarvisbot1738@gmail.com"
-    msg["from"] = user
-    password = "hgruhkhscrpcrdda"
-
-    server = smtplib.SMTP("smtp.gmail.com", 587)
-    server.starttls()
-    server.login(user, password)
-    server.send_message(msg)
-    server.quit()
-
-def text_alert(body):
-    msg = EmailMessage()
-    msg.set_content(body)
-    msg["to"] = "4426158724@mms.cricketwireless.net"
-    
-
-    user = "jarvisbot1738@gmail.com"
-    msg["from"] = user
-    password = "dkrysgjobeiiqhnr"
-
-    server = smtplib.SMTP("smtp.gmail.com", 587)
-    server.starttls()
-    server.login(user, password)
-    server.send_message(msg)
-    server.quit()
-
 def talk(text):
     engine.say(text)
     engine.runAndWait()
