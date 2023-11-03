@@ -42,7 +42,7 @@ userAdminStatus=["jessi : 0",
                 "braedon : 0",
                 "aria : 0"]
 
-token = "MTEzMDkxODkxNTcyMDEwMTk5OQ.Gfh7UP.WuW5QJyNOqiFHnMxc8IST-kCjOKqFtauCGyZeE"
+token = "token"
 
 client = commands.Bot(command_prefix='!', intents=discord.Intents.all())
 testOrder = []
