@@ -11,9 +11,7 @@ from discord import FFmpegPCMAudio, PCMVolumeTransformer
 import random
 
 
-from dense import Dense
-from activations import Tanh
-from MSE import mse, mse_prime
+
 import random
 
 import numpy as np
@@ -33,15 +31,18 @@ users = {"jessi": 561940809809657858,
          "elijah": 859430234956234782,
          "connor": 564974969767854100,
          "eades": 538892372029865984,
-         "braedon": 729832718057078814}
-userAdminStatus={"jessi": 0,
-                "lizzie": 0,
-                "elijah": 0,
-                "connor" : 0,
-                "eades" : 0,
-                "braedon" : 1}
+         "braedon": 729832718057078814,
+         "aria": 1142317341141647400}
 
-token = "token"
+userAdminStatus=["jessi : 0",
+                "lizzie : 0",
+                "elijah : 0",
+                "connor : 0",
+                "eades : 0",
+                "braedon : 0",
+                "aria : 0"]
+
+token = "MTEzMDkxODkxNTcyMDEwMTk5OQ.Gfh7UP.WuW5QJyNOqiFHnMxc8IST-kCjOKqFtauCGyZeE"
 
 client = commands.Bot(command_prefix='!', intents=discord.Intents.all())
 testOrder = []
@@ -52,21 +53,23 @@ Ylist=[]
 xLen=0
 yLen=0
 
-network = [
-        Dense(xLen, (xLen*2)),
-        Tanh(),
-        Dense((xLen*2), yLen),
-        Tanh()
-    ]
 
 @client.event
 async def on_ready():
     global initiativeTracker
     global turnN
+    global userAdminStatus
     initiativeTracker = []
     turnN = [0]
     channel = client.get_channel(1130930600006647878)
     name = "python.programmer#1616"
+
+    f=open("testFile.txt", "r")
+    holdListf=[]
+    for i,char in enumerate(f):
+        holdListf.append(char.strip())
+    userAdminStatus=holdListf
+    f.close()
 
     print(f'{client.user} is now running!')
     await channel.send("bot online")
@@ -134,16 +137,7 @@ async def join(ctx):
     """
     # print(member_voice)
 
-@client.command(pass_context=True)
-async def clearNet(ctx):
-    global Xlist
-    global YList
 
-    Xlist=[]
-    YList=[]
-    for i in network:
-        i.reset()
-    await ctx.send("network cleared")
 @client.command(pass_context=True, help="disconnects from current vc")
 async def leave(ctx):
     print(ctx.voice_client)
@@ -621,93 +615,7 @@ async def Insert(ctx, param: str):
     await ctx.send(str(holder))
 
 
-@client.command(pass_context=True, help="Dev command. Not finished. trains a basic neural net on the stored patterned data. I capped the number of trainings at 10000 iterations. Command structure: !train <number of training iterations>")
-async def train(ctx, param: int):
-    global network
-    #Xlist=[[1,0,0], [0,0,1]]
-    #Ylist=[[1], [0]]
-    await ctx.send("training in progress")
-    xLen=len(Xlist[0])
-    yLen=len(Ylist[0])
 
-    network = [
-        Dense(len(Xlist[0]), 16),
-        Tanh(),
-        Dense(16, 1),
-        Tanh()
-    ]
-
-    X = np.reshape(Xlist, (len(Xlist), len(Xlist[0]), 1))
-    Y = np.reshape(Ylist, (len(Ylist), 1, 1))
-
-
-    if(param>10000):
-        param=10000
-
-    epochs = param
-    learning_rate = 0.04
-
-    
-
-    # train
-    for e in range(epochs):
-        error = 0
-        for x, y in zip(X, Y):
-            #print(x)
-            # forward
-            output = x
-            
-            for layer in network:
-                output = layer.forward(output)
-            #print(output)
-            # error
-            error += mse(y, output)
-
-            # backward
-            grad = mse_prime(y, output)
-            for layer in reversed(network):
-                grad = layer.backward(grad, learning_rate)
-
-        error /= len(X)
-        print('%d/%d, error=%f' % (e + 1, epochs, error))
-    await ctx.send("training complete")
-    
-@client.command(pass_context=True, help="Dev command. Not finished. allows you to input a list of numbers and then input a corresponding output value for the neural net. Command Structure: !enter <0or1>,<0or1>,<0or1> <0or1> ")
-async def enter(ctx, param: str, param2: list):
-    param=param.split(",")
-    hold=[]
-    for i in param:
-        save=int(i)
-        hold.append(save)
-    param=hold
-    param2[0]=int(param2[0])
-
-    Xlist.append(param)
-    Ylist.append(param2)
-    await ctx.send("added you meowger")
-    await ctx.send(Xlist)
-    await ctx.send(Ylist)
-
-
-@client.command(pass_context=True, help="Dev command. Not finished. This command tests an inputed pattern structure against the trained neural net and then returns the predicted output. Command structure: !test <0or1>,<0or1>,<0or1>")
-async def test(ctx, param: str):
-    #Xlist[random.randint(0,3)]
-    
-    param=param.split(",")
-    hold=[]
-    for i in param:
-        save=int(i)
-        hold.append(save)
-    param=hold
-    print(param)
-    output= np.reshape(param, (1, len(param), 1))
-    output=output[0]
-    print(output)
-
-    for layer in network:
-        output = layer.forward(output)
-
-    await ctx.send(output)
 @client.command(pass_context=True, help="Auth command")
 async def admin(ctx):
     global adminRequester
@@ -724,18 +632,54 @@ async def adminCode(ctx, param: int):
             await ctx.send("Admin approved")
             adminRequester=""
             checkVar=False
-            hold1=users.keys()
-            hold2=users.values()
-            hold3=""
-            for i in hold2():
-                if(i==ctx.message.author):
+            hold3=0
+            name=""
+            for i in users:
+                #print(ctx.message.author.id)
+                if(users[i] == ctx.message.author.id):
+                    name=i
+            for i, char in enumerate(userAdminStatus):
+                s1, status = char.split(" : ")
+                #print(s1)
+                #print(name)
+                if(s1==name):
                     hold3=i
-            status=userAdminStatus[hold3]
-            if(status==0):
-                userAdminStatus[hold3]=1
+                    #print("True")
+                    break
+            
+            s1, status=userAdminStatus[hold3].split(" : ")
+            
+            if(status=="0"):
+                userAdminStatus[hold3]= s1 + " : 1"
+            else:
+                userAdminStatus[hold3]= s1 + " : 0"
+            f = open("testFile.txt", "w")
+            for i in userAdminStatus:
+                #make sure to split at " : " to get the "key" and the "value"
+                i, i1=i.split(" : ")
+                f.writelines(i + " : " + i1 + "\n")
+            f.close()
 @client.command(pass_context=True)
 async def adminList(ctx):
     await ctx.send(userAdminStatus)
+
+@client.command(pass_context=True)
+async def wipeList(ctx):
+    global userAdminStatus
+    
+    userAdminStatus=["jessi : 0",
+                "lizzie : 0",
+                "elijah : 0",
+                "connor : 0",
+                "eades : 0",
+                "braedon : 0",
+                "aria : 0"]
+    f = open("testFile" "w")
+    for i in userAdminStatus:
+        #make sure to split at " : " to get the "key" and the "value"
+        i, i1=i.split(" : ")
+        f.writelines(i + " : " + i1 + "\n")
+    f.close()
 
 @client.command(pass_context=True)
 async def giveAdmin(ctx, param: str):
@@ -747,17 +691,30 @@ async def giveAdmin(ctx, param: str):
 
 @client.command(pass_context=True)
 async def remoteTest(ctx, param: int):
+    channel = client.get_channel(1130930600006647878)
     global adminRequester
     global checkVar
     if(ctx.message.author==adminRequester and checkVar==True):
-        if(param==1101):
-            await ctx.send("Admin approved")
+        if(param==1102):
+            await ctx.send("Google command approved")
             c=webbrowser.get("chrome")
             c.open("https://www.google.co.uk/")
+        else:
+            await ctx.send("password rejected. Get fucked")
+            await channel.send("Someone tried a wrong password")
+
+        adminRequester=""
+        checkVar = False
+
+@client.command(pass_context=True)
+async def bomb(ctx, code: int, param: str):
+    global users
+    if code==1001:
+        users
+
 
 
 
 
 
 client.run(token)
-
