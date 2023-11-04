@@ -1,4 +1,3 @@
-
 import discord
 from character import ObJ
 import youtube_dl
@@ -21,9 +20,8 @@ FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconne
 
 # cogs = [musiC]
 
-checkVar=""
-adminRequester=""
 
+adminRequester=""
 
 bot_status = (["Status 1", "Status 2", "Status 3", "Status 4"])
 users = {"jessi": 561940809809657858,
@@ -36,7 +34,7 @@ users = {"jessi": 561940809809657858,
 
 userAdminStatus=[]
 #test
-token = "token"
+token = ""
 
 client = commands.Bot(command_prefix='!', intents=discord.Intents.all())
 testOrder = []
@@ -52,14 +50,19 @@ def searchUsers(target):
         if (users[i] == target.id):
             return(i)
     return "Not found"
-def checkAdmin(target):
+def isAdmin(target):
     global userAdminStatus
     hold = searchUsers(target)
     if(hold not in userAdminStatus):
         return False
     else:
         return True
-
+def updateAdminFile():
+    global userAdminStatus
+    f = open("testFile.txt", "w")
+    for i in userAdminStatus:
+        f.writelines(i + "\n")
+    f.close()
 
 @client.event
 async def on_ready():
@@ -100,7 +103,7 @@ async def hello(ctx):
 
 @client.command(aliases=["hello?"], pass_context=True, help="you type hello? and meowl does a sam jackson impression")
 async def hewlo(ctx):
-    await ctx.send("Hoot hoot muthafucka!")
+    await ctx.send("Hoot hoot muthaf*cka!")
 
 
 @client.command(aliases=["hello:"], pass_context=True,
@@ -116,9 +119,9 @@ async def Hello(ctx, member: str):
                 san = users[i]
                 print(san)
 
-                await guild.get_member(san).send("Hoot hoot muthafucka")
+                await guild.get_member(san).send("Hoot hoot muthaf*cka")
 
-    # await ctx.send("Hoot hoot muthafucka!")
+    # await ctx.send("Hoot hoot muthaf*cka!")
 
 
 @client.command(pass_context=True, help="joins the vc the user is in")
@@ -626,29 +629,21 @@ async def Insert(ctx, param: str):
 @client.command(pass_context=True, help="Auth command")
 async def admin(ctx):
     global adminRequester
-    global checkVar
     await ctx.message.author.send("Insert auth code now")
     adminRequester=ctx.message.author
-    checkVar=True
 @client.command(pass_context=True)
 async def adminCode(ctx, param: int):
     global adminRequester
-    global checkVar
-    if(ctx.message.author==adminRequester and checkVar==True):
+    global userAdminStatus
+
+    if(ctx.message.author==adminRequester):
         if(param==1101):
             await ctx.send("Admin approved")
             adminRequester=""
-            checkVar=False
-            hold3=0
-            name=""
-            for i in users:
-                #print(ctx.message.author.id)
-                if(users[i] == ctx.message.author.id):
-                    userAdminStatus.append(i)
+            hold=searchUsers(ctx.message.author)
+            userAdminStatus.append(hold)
             f = open("testFile.txt", "w")
-            for i in userAdminStatus:
-                f.writelines(i + "\n")
-            f.close()
+            updateAdminFile()
 @client.command(pass_context=True)
 async def adminList(ctx):
     await ctx.send(userAdminStatus)
@@ -656,26 +651,37 @@ async def adminList(ctx):
 @client.command(pass_context=True)
 async def wipeList(ctx):
     global userAdminStatus
-    save = searchUsers(ctx.author)
-    if(save in userAdminStatus):
-        userAdminStatus=[]
-        f = open("testFile.txt", "w")
-        for i in userAdminStatus:
-            #make sure to split at " : " to get the "key" and the "value"
-            i, i1=i.split(" : ")
-            f.writelines(i + " : " + i1 + "\n")
-        f.close()
+    if(isAdmin(ctx.message.author)):
+        userAdminStatus = ["braedon"]
+        updateAdminFile()
         await ctx.send("admins wiped")
     else:
-        await ctx.send("request denied")
+        await ctx.send("request denied.")
+
+@client.command(pass_context=True)
+async def removeFromList(ctx, param: str):
+    global userAdminStatus
+    if(isAdmin(ctx.message.author)):
+        if(param != "braedon"):
+            userAdminStatus.remove(param)
+            updateAdminFile()
+        else:
+            await ctx.send("Nice try dumb f*cker you think I didn't plan for this?")
+    else:
+        await ctx.send("You're not an admin dumbf*ck")
+            
+
 
 @client.command(pass_context=True)
 async def giveAdmin(ctx, param: str):
-    await ctx.send("Admin approved")
-    
-    status=userAdminStatus[param]
-    if(status==0):
-        userAdminStatus[param]=1
+    global userAdminStatus
+    if(isAdmin(ctx.message.author) and isAdmin(param)):
+        userAdminStatus.append(param)
+        updateAdminFile()
+    elif(isAdmin(param)):
+        await ctx.send("Alert: User already admin")
+    else:
+        await ctx.send("Alert: Invalid clearance")
 
 @client.command(pass_context=True)
 async def remoteTest(ctx, param: int):
