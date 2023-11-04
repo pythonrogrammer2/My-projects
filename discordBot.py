@@ -694,7 +694,7 @@ async def remoteTest(ctx, param: int):
             c=webbrowser.get("chrome")
             c.open("https://www.google.co.uk/")
         else:
-            await ctx.send("password rejected. Get fucked")
+            await ctx.send("password rejected. Get f*cked")
             await channel.send("Someone tried a wrong password")
 
         adminRequester=""
