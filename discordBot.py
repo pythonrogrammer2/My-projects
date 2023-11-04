@@ -34,15 +34,9 @@ users = {"jessi": 561940809809657858,
          "braedon": 729832718057078814,
          "aria": 1142317341141647400}
 
-userAdminStatus=["jessi : 0",
-                "lizzie : 0",
-                "elijah : 0",
-                "connor : 0",
-                "eades : 0",
-                "braedon : 0",
-                "aria : 0"]
-
-token = "token"
+userAdminStatus=[]
+#test
+token = "MTEzMDkxODkxNTcyMDEwMTk5OQ.Gz8WM3.I_a75g0ULaPOGbqO6BYLL3dypYu086LE9SnJRs"
 
 client = commands.Bot(command_prefix='!', intents=discord.Intents.all())
 testOrder = []
@@ -52,6 +46,19 @@ Xlist=[]
 Ylist=[]
 xLen=0
 yLen=0
+
+def searchUsers(target):
+    for i in users:
+        if (users[i] == target.id):
+            return(i)
+    return "Not found"
+def checkAdmin(target):
+    global userAdminStatus
+    hold = searchUsers(target)
+    if(hold not in userAdminStatus):
+        return False
+    else:
+        return True
 
 
 @client.event
@@ -637,27 +644,10 @@ async def adminCode(ctx, param: int):
             for i in users:
                 #print(ctx.message.author.id)
                 if(users[i] == ctx.message.author.id):
-                    name=i
-            for i, char in enumerate(userAdminStatus):
-                s1, status = char.split(" : ")
-                #print(s1)
-                #print(name)
-                if(s1==name):
-                    hold3=i
-                    #print("True")
-                    break
-            
-            s1, status=userAdminStatus[hold3].split(" : ")
-            
-            if(status=="0"):
-                userAdminStatus[hold3]= s1 + " : 1"
-            else:
-                userAdminStatus[hold3]= s1 + " : 0"
+                    userAdminStatus.append(i)
             f = open("testFile.txt", "w")
             for i in userAdminStatus:
-                #make sure to split at " : " to get the "key" and the "value"
-                i, i1=i.split(" : ")
-                f.writelines(i + " : " + i1 + "\n")
+                f.writelines(i + "\n")
             f.close()
 @client.command(pass_context=True)
 async def adminList(ctx):
@@ -666,20 +656,18 @@ async def adminList(ctx):
 @client.command(pass_context=True)
 async def wipeList(ctx):
     global userAdminStatus
-    
-    userAdminStatus=["jessi : 0",
-                "lizzie : 0",
-                "elijah : 0",
-                "connor : 0",
-                "eades : 0",
-                "braedon : 0",
-                "aria : 0"]
-    f = open("testFile" "w")
-    for i in userAdminStatus:
-        #make sure to split at " : " to get the "key" and the "value"
-        i, i1=i.split(" : ")
-        f.writelines(i + " : " + i1 + "\n")
-    f.close()
+    save = searchUsers(ctx.author)
+    if(save in userAdminStatus):
+        userAdminStatus=[]
+        f = open("testFile.txt", "w")
+        for i in userAdminStatus:
+            #make sure to split at " : " to get the "key" and the "value"
+            i, i1=i.split(" : ")
+            f.writelines(i + " : " + i1 + "\n")
+        f.close()
+        await ctx.send("admins wiped")
+    else:
+        await ctx.send("request denied")
 
 @client.command(pass_context=True)
 async def giveAdmin(ctx, param: str):
