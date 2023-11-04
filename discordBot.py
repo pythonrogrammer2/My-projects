@@ -36,7 +36,7 @@ users = {"jessi": 561940809809657858,
 
 userAdminStatus=[]
 #test
-token = "MTEzMDkxODkxNTcyMDEwMTk5OQ.Gz8WM3.I_a75g0ULaPOGbqO6BYLL3dypYu086LE9SnJRs"
+token = "token"
 
 client = commands.Bot(command_prefix='!', intents=discord.Intents.all())
 testOrder = []
