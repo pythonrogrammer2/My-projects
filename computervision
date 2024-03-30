@@ -1,0 +1,46 @@
+import numpy as np
+import cv2
+
+
+cap = cv2.VideoCapture(0)
+cv2.namedWindow("image")
+def nothing(x):
+    pass
+def track(x):
+    print(x)
+
+HMin=cv2.createTrackbar("H min", "image", 0, 255, nothing)
+LMin=cv2.createTrackbar("L min", "image", 0, 255, nothing)
+SMin=cv2.createTrackbar("S min", "image", 0, 255, nothing)
+HMax=cv2.createTrackbar("H max", "image", 0, 255, nothing)
+LMax=cv2.createTrackbar("L max", "image", 0, 255, nothing)
+SMax=cv2.createTrackbar("S max", "image", 0, 255, nothing)
+HMin=LMin=SMin=HMax=LMax=SMax=0
+while True:
+    ret, frame = cap.read()
+    
+    HMin = cv2.getTrackbarPos('H Min', 'image')
+    LMin = cv2.getTrackbarPos('L Min', 'image')
+    SMin = cv2.getTrackbarPos('S Min', 'image')
+    HMax = cv2.getTrackbarPos('H Max', 'image')
+    LMax = cv2.getTrackbarPos('L Max', 'image')
+    SMax = cv2.getTrackbarPos('S Max', 'image')
+
+    
+    lower_white = np.array([27,0,242])
+    upper_white = np.array([255,255,255])
+
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HLS)
+    mask = cv2.inRange(hsv, lower_white, upper_white)
+
+    result = cv2.bitwise_and(frame, frame, mask=mask)
+    
+    
+    color=frame[50,50]
+    cv2.imshow("frame", result)
+    if cv2.waitKey(1) == ord("q"):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
+print(color)
