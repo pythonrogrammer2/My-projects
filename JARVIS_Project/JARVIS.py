@@ -294,13 +294,7 @@ def run_jarvis():
             print(str(startMin) + ":" + str(startSec))
         talk("Sir, your first timer is up")
     #end of timer section
-    #beginning of the special section
-    elif("perfectly imperfect" in command):
-        url="https://www.youtube.com/playlist?list=PLL3CDR-N_kZJgcw75RveajUd65fMf6Y9r&jct=9153ERfo5c_V0MHSSL9wA1v87khRIw"
-        time.sleep(sleepTime)
-        webbrowser.open_new_tab(url)
-    #end of the special section
-    #beginning of the open app section
+    
     #beginning of the open discord section
     elif("open discord" in command):
         print("Yes sir")
@@ -425,3 +419,4 @@ if(continueCheck != "i'm done"):
         print("Anything else?")
         talk("Anything else?")
         command=end_program()
+
